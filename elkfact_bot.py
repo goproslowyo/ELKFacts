@@ -1,0 +1,183 @@
+import os
+import random
+from dotenv import load_dotenv
+from twitchio.ext import commands
+import logging
+
+# Set up logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
+
+# Load environment variables
+load_dotenv()
+
+# Elk facts list
+ELK_FACTS = [
+    "Elk are one of the largest members of the deer family, Cervidae.",
+    "Male elk are called bulls, females are called cows, and young elk are called calves.",
+    "Elk can grow up to 9 feet tall including their antlers!",
+    "Male elk (bulls) can weigh between 600-1,100 pounds, while females (cows) typically weigh 375-600 pounds.",
+    "Elk antlers can grow up to an inch per day during peak growth season!",
+    "A male elk's bugle can be heard for miles during mating season.",
+    "Elk are excellent swimmers and can swim several miles.",
+    "Baby elk can stand within 20 minutes of being born!",
+    "Elk antlers can weigh up to 40 pounds when fully grown.",
+    "Elk are herbivores and can eat up to 15 pounds of vegetation daily.",
+    "Elk can run at speeds of up to 45 miles per hour!",
+    "Elk are crepuscular, meaning they are most active at dawn and dusk.",
+    "Elk migrate to higher elevations in summer and lower elevations in winter.",
+    "A group of elk is called a herd, but a group of bulls is sometimes called a 'bachelor group.'",
+    "Elk have excellent hearing and sense of smell to detect predators.",
+    "Bull elk shed and regrow their antlers every year!",
+    "New antlers are covered in soft velvet, which supplies nutrients for growth.",
+    "Elk antlers harden in late summer when the velvet sheds off.",
+    "Elk use their antlers to fight for dominance during the rut (mating season).",
+    "Only bulls grow antlers; cows do not.",
+    "Elk are social animals and often live in large herds of up to several hundred individuals.",
+    "Elk can jump over 8 feet high in a single leap.",
+    "Elk are ruminants, meaning they have a four-chambered stomach like cows.",
+    "Elk chew cud to help break down tough plant material.",
+    "The bugle of an elk is a mix of a high-pitched scream and a deep grunt.",
+    "The loudest bugling bulls are often the most dominant.",
+    "Elk are found in North America and parts of Asia.",
+    "Elk populations were once nearly wiped out in the U.S. due to overhunting but have since rebounded.",
+    "Elk are commonly found in the Rocky Mountains, Yellowstone, and Canada.",
+    "A newborn elk calf weighs about 35 pounds at birth.",
+    "Elk calves have white spots at birth to help them blend into their surroundings.",
+    "Elk calves nurse for about six months before switching to solid food.",
+    "During winter, elk form large herds to help protect against predators.",
+    "Elk have adapted to a variety of habitats, from forests to grasslands and mountains.",
+    "Elk are highly alert and rely on their large ears to detect danger.",
+    "The lifespan of an elk in the wild is usually between 10-15 years.",
+    "Wolves, mountain lions, and bears are the main predators of elk.",
+    "Elk can detect scents from over a mile away.",
+    "Elk fur is hollow, providing insulation against cold weather.",
+    "Elk sometimes rub their antlers on trees to mark their territory.",
+    "Bulls will roll in mud and urine to attract mates during the rut.",
+    "Elk antlers are made of bone and can be regrown annually.",
+    "Elk populations are managed through regulated hunting to prevent overpopulation.",
+    "Elk hooves are sharp and can be used as a defense against predators.",
+    "Elk are often featured in indigenous folklore and traditions.",
+    "During extreme winters, elk may raid hay barns for food.",
+    "Elk are sometimes farmed for their meat and antlers.",
+    "Elk antlers are used in traditional medicine in some Asian cultures.",
+    "Elk can interbreed with red deer in captivity, producing hybrid offspring.",
+    "Some elk populations migrate over 100 miles between summer and winter ranges.",
+    "Elk use body language, such as ear movements and tail flicks, to communicate.",
+    "Bulls shed their antlers in late winter or early spring.",
+    "Calves are born scentless, which helps them avoid detection by predators.",
+    "Elk are one of the fastest deer species, capable of outrunning most predators.",
+    "Elk can store fat reserves during summer to survive harsh winters.",
+    "Elk have been successfully reintroduced in areas where they were once extinct.",
+    "Elk can be seen in many U.S. national parks, including Yellowstone and Great Smoky Mountains.",
+    "Elk have unique teeth adapted for grinding tough plant material.",
+    "Elk herds are often led by experienced older females.",
+    "Elk may use their tails as signals, raising them when alarmed.",
+    "During winter, elk grow a thicker coat to help retain body heat.",
+    "Elk have been observed rubbing their antlers on trees to remove velvet and strengthen their neck muscles.",
+    "Some elk populations in North America are monitored via GPS tracking for conservation research.",
+    "Elk hooves leave distinct tracks, which are often used for wildlife monitoring.",
+    "Elk can live at elevations over 10,000 feet in mountainous regions.",
+    "In some areas, elk are considered a keystone species, shaping ecosystems through grazing.",
+    "Elk prefer open meadows and grassy slopes for feeding.",
+    "Elk have been known to strip bark from trees like aspen and willow to eat.",
+    "Elk are often prey for wolves, which helps regulate both species' populations.",
+    "Bull elk can weigh more than some species of bears.",
+    "Elk have a keen sense of direction and can navigate large landscapes during migration.",
+    "Elk play a significant role in seed dispersal through their grazing habits.",
+    "Elk prefer fresh, green grasses but will eat woody plants in the winter.",
+    "Bulls can lose up to 20% of their body weight during the rut due to intense competition for mates.",
+    "Elk shed their winter coats in spring and develop a reddish summer coat.",
+    "Elk meat is leaner than beef and is considered a healthy alternative.",
+    "The elk is one of the most widely distributed deer species in North America.",
+    "Elk have been successfully introduced to regions like Kentucky, Pennsylvania, and North Carolina.",
+    "Elk have been depicted in ancient cave paintings and petroglyphs.",
+    "During deep snow, elk will follow trails created by other elk to conserve energy.",
+    "Elk can graze on over 200 different plant species.",
+    "Bulls will often wallow in mud to cool off and deter insects in the summer.",
+    "Elk have a third eyelid, called a nictitating membrane, to protect their eyes.",
+    "Despite their large size, elk can be very stealthy and quiet in the forest.",
+    "The reintroduction of wolves to Yellowstone National Park has helped balance elk populations and their impact on vegetation.",
+    "Elk antlers are among the fastest-growing bones in the animal kingdom.",
+    "Elk herds move in an organized manner, often with younger members in the center for protection.",
+    "Elk are known for their intelligence and ability to recognize danger quickly.",
+    "Elk have a complex social hierarchy, with dominant bulls controlling access to mates and resources.",
+    "Elk are strong runners and can maintain high speeds over long distances.",
+    "Elk can adapt to suburban environments, sometimes wandering into towns or farms.",
+    "Some elk populations have been trained to respond to human interactions in conservation areas.",
+    "Elk are one of the most popular animals for wildlife photography in national parks.",
+]
+
+class ElkFactBot(commands.Bot):
+    def __init__(self):
+        # Initialize our Bot with our access token, prefix and a list of channels to join
+        try:
+            token = os.environ.get('TMI_TOKEN')
+            client_id = os.environ.get('CLIENT_ID')
+            nick = os.environ.get('BOT_NICK')
+            channel = os.environ.get('CHANNEL')
+            
+            if not all([token, client_id, nick, channel]):
+                raise ValueError("Missing required environment variables")
+            
+            super().__init__(
+                token=token,
+                client_id=client_id,
+                nick=nick,
+                prefix='!',
+                initial_channels=[channel]
+            )
+            logger.info(f"Bot initialized for channel: {channel}")
+        except Exception as e:
+            logger.error(f"Failed to initialize bot: {str(e)}")
+            raise
+
+    async def event_ready(self):
+        """Called once when the bot is connected."""
+        try:
+            channels = [channel.name for channel in self.connected_channels]
+            logger.info(f'Ready | {self.nick} is online in {", ".join(channels)}')
+        except Exception as e:
+            logger.error(f"Error in event_ready: {str(e)}")
+
+    async def event_error(self, error: Exception, data: str = None):
+        """Called when the bot encounters an error."""
+        logger.error(f"Error encountered: {error}")
+        if data:
+            logger.error(f"Error data: {data}")
+
+    async def event_message(self, message):
+        """Runs every time a message is sent in chat."""
+        try:
+            # Ignore messages from the bot itself
+            if message.echo:
+                return
+
+            # Handle commands
+            await self.handle_commands(message)
+        except Exception as e:
+            logger.error(f"Error processing message: {str(e)}")
+
+    @commands.command(name='elkfact')
+    async def elk_fact(self, ctx: commands.Context):
+        """Send a random elk fact when the command is used."""
+        try:
+            fact = random.choice(ELK_FACTS)
+            await ctx.send(f"Did you know? {fact}")
+            logger.info(f"Sent elk fact in response to {ctx.author.name}")
+        except Exception as e:
+            logger.error(f"Error sending elk fact: {str(e)}")
+            await ctx.send("Sorry, I couldn't retrieve an elk fact right now!")
+
+def main():
+    try:
+        bot = ElkFactBot()
+        bot.run()
+    except Exception as e:
+        logger.critical(f"Critical error running bot: {str(e)}")
+
+if __name__ == "__main__":
+    main()
