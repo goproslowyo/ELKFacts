@@ -1,0 +1,19 @@
+services:
+  elkfacts-bot:
+    build: .
+    volumes:
+      - ./.oauth_cache:/app/.oauth_cache
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    environment:
+      - DOCKER=true
+    restart: unless-stopped
+    init: true
+    # Ensure logs are sent to Docker log collector
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "5"
