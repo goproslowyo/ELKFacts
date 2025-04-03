@@ -1,10 +1,18 @@
+# Git
+.git
+.gitignore
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
 # Python
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
 .Python
-build/
 develop-eggs/
 dist/
 downloads/
@@ -20,31 +28,22 @@ wheels/
 .installed.cfg
 *.egg
 
-# Virtual Environment
-venv/
-env/
-ENV/
-.env
-.venv
+# Logs
+*.log
+
+# Docker
+Dockerfile
+.dockerignore
+docker-compose.yml
 
 # IDE
 .idea/
 .vscode/
 *.swp
 *.swo
-.project
-.pydevproject
-.settings/
 
-# Logs
-*.log
-logs/
-
-# Local development
-.env
-.env.*
-!.env.example
-
-# OAuth
-.oauth_cache.json
-*.oauth_cache.json
+# Documentation
+README.md
+DOCKER.md
+LICENSE
+*.rst
